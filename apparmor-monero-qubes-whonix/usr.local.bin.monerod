@@ -1,0 +1,56 @@
+## Copyright (C) 2018 0xB44EFD8751077F97 <0xB44EFD8751077F97@firemail.cc>
+## Email PGP key: 0x1459B25A910FB2ADA81F3A2ECEB6855A143465B2
+## https://github.com/0xB44EFD8751077F97/apparmor-monero-qubes-whonix
+## See the file COPYING for copying conditions.
+
+#include <tunables/global>
+
+@{MONERO_DIR}={.bitmonero,monero*,Monero*}
+
+profile /usr/local/bin/monerod flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/private-files-strict>
+
+  # Location monerod binary
+  /usr/local/bin/monerod mr,
+
+  # Default monerod data directory
+  owner @{HOME}/@{MONERO_DIR}/bitmonero.conf r,
+  owner @{HOME}/@{MONERO_DIR}/bitmonero.log rw,
+  owner @{HOME}/@{MONERO_DIR}/lmdb/ rw,
+  owner @{HOME}/@{MONERO_DIR}/lmdb/data.mdb mrw,
+  owner @{HOME}/@{MONERO_DIR}/lmdb/lock.mdb mrwk,
+  owner @{HOME}/@{MONERO_DIR}/monerod.pid mrw,
+  owner @{HOME}/@{MONERO_DIR}/p2pstate.bin mrw,
+  owner @{HOME}/@{MONERO_DIR}/poolstate.bin mrw,
+
+  # Other Monero data directories for flexibility
+  owner @{HOME}/**monero-wallet-gui.log rw,
+  owner @{HOME}/@{MONERO_DIR}/** rw,
+  owner @{HOME}/@{MONERO_DIR}/**/bitmonero.conf r,
+  owner @{HOME}/@{MONERO_DIR}/**/bitmonero.log rw,
+  owner @{HOME}/@{MONERO_DIR}/**/lmdb/ rw,
+  owner @{HOME}/@{MONERO_DIR}/**/lmdb/data.mdb mrw,
+  owner @{HOME}/@{MONERO_DIR}/**/lmdb/lock.mdb mrwk,
+  owner @{HOME}/@{MONERO_DIR}/**/p2pstate.bin rw,
+  owner @{HOME}/@{MONERO_DIR}/**/poolstate.bin rw,
+
+  # Default shared-ringdb dir
+  owner @{HOME}/.shared-ringdb/** rwk,
+
+  # General files and directories
+  /etc/hosts r,
+  /etc/inputrc r,  
+  deny /etc/resolv.conf rwklx,
+
+  # Qubes specific directories
+  # Block access to /rw/
+  audit deny /rw/** rw,
+
+  # Block access to QubesIncoming
+  audit deny @{HOME}/QubesIncoming/** rw,
+
+  # Fix for -- audit: type=1400 audit(xxxxx.xxx:xx): apparmor="DENIED" operation="file_mmap" profile="/usr/local/bin/monerod" name="/" pid=xxxx comm="monerod" requested_mask="r" denied_mask="r" fsuid=117 ouid=117
+  # Commented out because too permissive and not needed to run. Message can be safely ignored.
+  # / r,
+}

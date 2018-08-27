@@ -1,0 +1,66 @@
+## Copyright (C) 2018 0xB44EFD8751077F97 <0xB44EFD8751077F97@firemail.cc>
+## Email PGP key: 0x1459B25A910FB2ADA81F3A2ECEB6855A143465B2
+## https://github.com/0xB44EFD8751077F97/apparmor-monero-qubes-whonix
+## See the file COPYING for copying conditions.
+
+#include <tunables/global>
+
+@{MONERO_DIR}={.bitmonero,monero*,Monero*}
+
+profile /usr/local/bin/monero-wallet-gui flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/private-files-strict>
+  #include <abstractions/consoles>
+  #include <abstractions/X>
+  #include <abstractions/fonts>
+  #include <abstractions/freedesktop.org>
+
+  # Location monero-wallet-gui binary
+  /usr/local/bin/monero-wallet-gui r,
+
+  # Location of monerod binary
+  /usr/local/bin/monerod rpx,
+  
+  # Default shared-ringdb dir
+  owner @{HOME}/.shared-ringdb/** rwk,
+
+  # Default monerod data directory
+  # Block access to monerod files
+  owner @{HOME}/monero-wallet-gui.log rw,
+  owner @{HOME}/@{MONERO_DIR}/** rw,
+  owner @{HOME}/Monero/** rw,
+  owner /home/*/Monero/** rw,
+  @{HOME}/@{MONERO_DIR}/{,stagenet/,testnet/}** rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,stagenet/,testnet/}bitmonero.log rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,stagenet/,testnet/}p2pstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,stagenet/,testnet/}poolstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/{,stagenet/,testnet/}lmdb/** rw,
+
+  # General files and directories
+  /etc/hosts r,
+  deny /etc/resolv.conf rwklx,
+  deny /etc/host.conf rwklx,
+  deny /etc/nsswitch.conf rwklx,
+
+  # Monero-wallet-gui specific
+  owner @{HOME}/.config/user-dirs.dirs r,
+  owner @{HOME}/.config/monero-project/ rw,
+  owner @{HOME}/.config/monero-project/* rwk,
+  owner /tmp/monero-core* rw,
+  deny owner @{HOME}/.config/QtProject.conf rw,
+  /etc/os-release r,
+  /etc/debian_version r,
+  /sys/devices/pci[0-9]*/**/{uevent,config} r,
+  /dev/dri/ r,
+
+  # Qubes specific directories
+  # Block access to /rw/
+  audit deny /rw/** rw,
+
+  # Block access to QubesIncoming
+  audit deny @{HOME}/QubesIncoming/** rw,
+
+  # Fix for -- audit: type=1400 audit(xxxxxxxxxx.xxx:xxx): apparmor="DENIED" operation="file_mmap" profile="/usr/local/bin/monero-wallet-gui" name="/" pid=xxxx comm=5468726561642028706F6F6C656429 requested_mask="r" denied_mask="r" fsuid=1000 ouid=1000
+  # Commented out because too permissive and not needed to run. Message can be safely ignored.
+  # / r,
+}

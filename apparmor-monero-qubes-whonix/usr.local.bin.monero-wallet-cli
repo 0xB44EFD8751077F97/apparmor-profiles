@@ -1,0 +1,46 @@
+## Copyright (C) 2018 0xB44EFD8751077F97 <0xB44EFD8751077F97@firemail.cc>
+## Email PGP key: 0x1459B25A910FB2ADA81F3A2ECEB6855A143465B2
+## https://github.com/0xB44EFD8751077F97/apparmor-monero-qubes-whonix
+## See the file COPYING for copying conditions.
+
+#include <tunables/global>
+
+@{MONERO_DIR}={.bitmonero,Monero*,monero*}
+
+profile /usr/local/bin/monero-wallet-cli {
+  #include <abstractions/base>
+  #include <abstractions/private-files-strict>
+  
+  # Location monero-wallet-cli binary
+  /usr/local/bin/monero-wallet-cli r,
+
+  # Default monero wallet files
+  owner @{HOME}/monero-wallet-cli.log rw,
+
+  # Default shared-ringdb dir
+  owner @{HOME}/.shared-ringdb/** rwk,
+
+  # Default monerod data directory
+  # Block access to monerod files
+  owner @{HOME}/@{MONERO_DIR}/** rw,
+  audit deny @{HOME}/@{MONERO_DIR}/**/monerod.pid rw,
+  audit deny @{HOME}/@{MONERO_DIR}/**/bitmonero.log rw,
+  audit deny @{HOME}/@{MONERO_DIR}/**/p2pstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/**/poolstate.bin rw,
+  audit deny @{HOME}/@{MONERO_DIR}/**/lmdb/** rw,
+
+  # General files and directories
+  /etc/hosts r,
+  /etc/inputrc r,
+  deny /etc/resolv.conf rwklx,
+  deny /etc/host.conf rwklx,
+  deny /etc/nsswitch.conf rwklx,
+
+  # Qubes specific directories
+  # Block access to /rw/
+  audit deny /rw/** rw,
+
+  # Block access to QubesIncoming
+  audit deny @{HOME}/QubesIncoming/** rw,
+
+}
