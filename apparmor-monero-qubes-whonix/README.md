@@ -16,13 +16,13 @@ These profiles were modified from the profiles found [here](https://github.com/g
 Download the profiles:
 
 ```
-$ git clone https://github.com/0xB44EFD8751077F97/apparmor-monero-qubes-whonix ~/apparmor-monero-qubes-whonix
+$ git clone https://github.com/0xB44EFD8751077F97/apparmor-profiles ~/apparmor-profiles
 ```
 
 Install the profiles:
 
 ```
-$ sudo install -g root -m 0644 -o root ~/apparmor-monero-qubes-whonix/usr.local.bin.monero* /etc/apparmor.d/
+$ sudo install -g root -m 0644 -o root ~/apparmor-profiles/apparmor-monero-qubes-whonix/usr.local.bin.monero* /etc/apparmor.d/
 ```
 
 ## License
