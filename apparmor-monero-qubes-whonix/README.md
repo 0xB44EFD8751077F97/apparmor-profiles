@@ -29,7 +29,7 @@ $ sudo install -g root -m 0644 -o root ~/apparmor-profiles/apparmor-monero-qubes
 ```
 ## License
 
-GPLv3.
+GPLv3
 
 See the file COPYING for copying conditions.
 ## Support
