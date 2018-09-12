@@ -1,0 +1,22 @@
+#include <tunables/global>
+
+profile bitcoind @{bitcoind_executable} {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  
+  # Main executables
+
+  /usr/local/bin/bitcoind mr,
+
+  # System files
+
+  /sys/devices/system/cpu/ r,
+  /{,var/}run/tor/control.authcookie r, # Tor support
+  /home/bitcoind/.bitcoin/bitcoin.conf r,
+  /home/bitcoind/.bitcoin/bitcoin.pid rw,
+
+  # User files
+
+  owner /home/bitcoind/.bitcoin/{,**} rwk,
+
+}

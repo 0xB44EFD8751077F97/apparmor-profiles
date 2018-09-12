@@ -1,0 +1,20 @@
+#include <tunables/global>
+
+profile lnd @{lnd_executable} {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  
+  # Main executables
+
+  /home/user/gocode/bin/lnd mr,
+
+  # System files
+ 
+  @{PROC}/sys/kernel/hostname r,
+  @{PROC}/sys/net/core/somaxconn r,
+
+  # User files
+
+  owner /home/user/.lnd/{,**} rwk,
+
+}
