@@ -1,6 +1,6 @@
 ## Copyright (C) 2018 0xB44EFD8751077F97 <0xB44EFD8751077F97@firemail.cc>
 ## Email PGP key: 0x1459B25A910FB2ADA81F3A2ECEB6855A143465B2
-## https://github.com/0xB44EFD8751077F97/apparmor-profiles/apparmor-monero-qubes-whonix
+## https://github.com/0xB44EFD8751077F97/apparmor-monero-qubes-whonix
 ## See the file COPYING for copying conditions.
 
 #include <tunables/global>
@@ -39,13 +39,20 @@ profile /usr/local/bin/monerod flags=(attach_disconnected) {
   owner @{HOME}/.shared-ringdb/** rwk,
 
   # General files and directories
+  /etc/nsswitch.conf r,
+  /etc/protocols r,
   /etc/hosts r,
-  /etc/inputrc r,  
+  /etc/inputrc r,
+  /sys/devices/vbd-51728/block/xvdb/queue/rotational r,
+  /sys/devices/system/cpu/ r,
   deny /etc/resolv.conf rwklx,
 
   # Qubes specific directories
   # Block access to /rw/
   audit deny /rw/** rw,
+
+  # Whonix specific directories
+  /etc/tor/torsocks.conf.anondist r,
 
   # Block access to QubesIncoming
   audit deny @{HOME}/QubesIncoming/** rw,
